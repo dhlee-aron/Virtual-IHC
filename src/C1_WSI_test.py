@@ -6,15 +6,16 @@ import numpy as np
 import openslide
 import torch
 import torchvision.transforms as transforms
-from model.networks import define_G
+from src.model.networks import define_G
 from skimage.color import rgb2gray
 from tifffile import memmap
 
-
+:q
 def isBG(img, bg_thres, bg_percent):
     gray_img = np.uint8(rgb2gray(img) * 255)
     #    gray_img = img.convert('L')
     white_percent = np.mean((gray_img > bg_thres))
+
     black_percent = np.mean((gray_img < 255 - bg_thres))
 
     if black_percent > bg_percent or white_percent > bg_percent \
@@ -53,8 +54,12 @@ def resize_region(im_l, im_r, scale_factor):
     sr = sl + sw - 1
     return sl, sr
 
-def predcit_wsi(input_file_path, output_file_path, local_size=1024, margin=256,
-                img_resize_factor=2, scale_factor=4):
+
+def predcit_wsi(input_file_path, output_file_path, model_file_path,
+                local_size=1024,
+                margin=256,
+                img_resize_factor=2,
+                scale_factor=4):
     if input_file_path is None or not input_file_path:
         sys.stderr.write('Input file path is required.')
         exit(1)
@@ -109,14 +114,14 @@ def predcit_wsi(input_file_path, output_file_path, local_size=1024, margin=256,
         if isBG(he_patch_raw, 240, 0.95):
             continue
 
-        HE_patch_resized = cv2.resize(he_patch_raw,
+        he_patch_resized = cv2.resize(he_patch_raw,
                                       None,
                                       fx=1 / img_resize_factor,
                                       fy=1 / img_resize_factor)
 
-        HE_patch_tensor = transforms.ToTensor()(HE_patch_resized)
-        HE_patch_tensor = HE_patch_tensor.view(1, *HE_patch_tensor.shape)
-        input_ = HE_patch_tensor.to(device).type(torch.float32)
+        he_patch_tensor = transforms.ToTensor()(he_patch_resized)
+        he_patch_tensor = he_patch_tensor.view(1, *he_patch_tensor.shape)
+        input_ = he_patch_tensor.to(device).type(torch.float32)
         out = net_g(input_)[:, :3, :, :].detach().cpu().numpy().copy()
 
         out[out > 1] = 1
