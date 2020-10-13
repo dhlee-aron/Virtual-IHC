@@ -84,3 +84,7 @@ bin/
 data/
 doc/
 !/.gitignore
+
+# model weight
+*.pth
+*.svs

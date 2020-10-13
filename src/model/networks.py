@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.nn import init
 import functools
 from torch.optim import lr_scheduler
-from model.Unet.unet import Unet, UnetAttention
+from model.unet import Unet
 
 def get_norm_layer(norm_type='instance'):
     if norm_type == 'batch':

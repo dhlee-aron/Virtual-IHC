@@ -1,16 +1,16 @@
 import os
 import sys
-
+sys.path.append('./src')
 import cv2
 import numpy as np
 import openslide
 import torch
 import torchvision.transforms as transforms
-from src.model.networks import define_G
+from model.networks import define_G
 from skimage.color import rgb2gray
 from tifffile import memmap
 
-:q
+
 def isBG(img, bg_thres, bg_percent):
     gray_img = np.uint8(rgb2gray(img) * 255)
     #    gray_img = img.convert('L')
@@ -25,7 +25,7 @@ def isBG(img, bg_thres, bg_percent):
         return False
 
 
-def get_region(grid_x, image_w, grid_w, margin_w):
+def get_region(grid_x, image_w, grid_w, margin):
     '''
     Return the base and offset pair to read from the image.
     :param grid_x: grid index on the image
@@ -39,7 +39,7 @@ def get_region(grid_x, image_w, grid_w, margin_w):
     image_l = min(image_x, image_w - grid_w)
     image_r = image_l + grid_w - 1
 
-    read_l = max(0, image_l - margin_w)
+    read_l = max(0, image_l - margin)
     read_r = min(image_r + margin, image_w - 1)
     #    read_l = min(image_x - margin_w, image_w - (grid_w + margin_w))
     #    read_r = min(read_l + grid_w + (margin_w << 1), image_w) - 1
@@ -55,10 +55,8 @@ def resize_region(im_l, im_r, scale_factor):
     return sl, sr
 
 
-def predcit_wsi(input_file_path, output_file_path, model_file_path,
-                local_size=1024,
-                margin=256,
-                img_resize_factor=2,
+def predict_wsi(input_file_path, output_file_path, model_file_path,
+                local_size=1024, margin=256, img_resize_factor=2,
                 scale_factor=4):
     if input_file_path is None or not input_file_path:
         sys.stderr.write('Input file path is required.')
@@ -152,12 +150,9 @@ def predcit_wsi(input_file_path, output_file_path, model_file_path,
     print('finish the predict {}'.format())
 
 # Testing settings
-input_file_path = ''
-output_file_path = ''
-model_name = 'model_20200708.pth'
-model_file_path = "data/checkpoints/{}.pth".format(model_name)
+#  input_file_path = 'data/wsi/HE_S14-03249-3U.svs'
+#  output_file_path = 'data/result/wsi'
+#  model_name = 'model_20200708'
+#  model_file_path = "data/checkpoints/{}.pth".format(model_name)
+#  predict_wsi(input_file_path, output_file_path, model_file_path)
 
-margin = 256
-local_size = 1024
-img_resize_factor = 2
-scale_factor = 4
