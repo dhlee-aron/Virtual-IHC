@@ -90,3 +90,5 @@ doc/
 *.svs
 
 !bin/.gitkeep
+src/__pycache__/
+src/model/__pycache__/
