@@ -83,12 +83,12 @@ gen
 bin/
 data/
 doc/
-!/.gitignore
-
 # model weight
 *.pth
 *.svs
 
 !bin/.gitkeep
+!data/chekpoints/.gitkeep
+
 src/__pycache__/
 src/model/__pycache__/
