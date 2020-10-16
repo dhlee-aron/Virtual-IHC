@@ -88,3 +88,5 @@ doc/
 # model weight
 *.pth
 *.svs
+
+!bin/.gitkeep
