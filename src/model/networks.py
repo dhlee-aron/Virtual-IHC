@@ -19,20 +19,20 @@ def get_norm_layer(norm_type='instance'):
     return norm_layer
 
 
-def get_scheduler(optimizer, opt):
-    if opt.lr_policy == 'lambda':
+def get_scheduler(optimizer, lr_policy, epoch_count, niter, niter_decay, lr_decay_iters):
+    if lr_policy == 'lambda':
         def lambda_rule(epoch):
-            lr_l = 1.0 - max(0, epoch + opt.epoch_count - opt.niter) / float(opt.niter_decay + 1)
+            lr_l = 1.0 - max(0, epoch + epoch_count - niter) / float(niter_decay + 1)
             return lr_l
         scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
-    elif opt.lr_policy == 'step':
-        scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.lr_decay_iters, gamma=0.1)
-    elif opt.lr_policy == 'plateau':
+    elif lr_policy == 'step':
+        scheduler = lr_scheduler.StepLR(optimizer, step_size=lr_decay_iters, gamma=0.1)
+    elif lr_policy == 'plateau':
         scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.2, threshold=0.01, patience=5)
-    elif opt.lr_policy == 'cosine':
-        scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=opt.niter, eta_min=0)
+    elif lr_policy == 'cosine':
+        scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=niter, eta_min=0)
     else:
-        return NotImplementedError('learning rate policy [%s] is not implemented', opt.lr_policy)
+        return NotImplementedError('learning rate policy [%s] is not implemented', lr_policy)
     return scheduler
 
 
@@ -73,14 +73,9 @@ def init_net(net, init_type='normal', init_gain=0.02, gpu_id='cuda:0'):
     return net
 
 #batch
-def define_G(model,input_nc, output_nc, norm='batch', use_dropout=False, init_type='normal', init_gain=0.02, gpu_id='cuda:0'):
-#    net = None
-#    norm_layer = get_norm_layer(norm_type=norm)
-#    net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9)
+def define_G(model,input_nc, output_nc, init_type='normal', init_gain=0.02, gpu_id='cuda:0'):
     if model == 'unet':
         net = Unet(input_nc, output_nc, bilinear=True)
-    elif model == 'unet_attention':
-        net = UnetAttention(input_nc, output_nc, bilinear=True)
     return init_net(net, init_type, init_gain, gpu_id)
 
 

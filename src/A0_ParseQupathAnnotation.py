@@ -1,27 +1,11 @@
 import os
 import re
-import openslide
 import numpy as np
-import matplotlib.pyplot as plt
-import glob
-os.getcwd()
 
-base_path = './data/wsi/'
-def Points_Split(temp_points_str):
-    temp_points_str = temp_points_str.replace('[', '')
-    temp_points_str = temp_points_str.replace(' ]', '')
-    temp_points_str = temp_points_str.split('Point: ')[1:]
-    return temp_points_str
-
-
-# anno_path = os.path.join(base_path, 'annotation')
-
-files_list = glob.glob(os.path.join(base_path, 'hotspot_annotation_qpdata/*'))
-
-for i in range(len(files_list)):
+def ParseQupathAnnotation(path, basepath='./data/wsi/hotspot_annotation'):
     annotation = {}
-    files_path = files_list[i]
-    file_name = os.path.splitext(os.path.basename(files_path))[0]
+    files_path = path
+    file_name = os.path.splitext(os.path.basename(path))[0]
     annotation[file_name] = {}
     idx = 0
 
@@ -48,9 +32,10 @@ for i in range(len(files_list)):
                                                         max(coord_y)]
             idx += 1
 
-    np.save(os.path.join(base_path,
-                         'hotspot_annotation',
+    np.save(os.path.join(basepath,
                          '{}.npy'.format(file_name)),
             annotation)
+    print('Anno. {} saved at {}'.format(file_name, basepath)
 
-
+# anno_path = os.path.join(base_path, 'annotation')
+# ParseQupathAnnotation(path)
