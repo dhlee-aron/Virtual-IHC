@@ -84,9 +84,11 @@ gen
 *.pth
 *.svs
 *.jpg
+*.jpeg
+*.txt
 
 !bin/.gitkeep
 !data/chekpoints/.gitkeep
-
+!requirements.txt
 src/__pycache__/
 src/model/__pycache__/
