@@ -86,6 +86,8 @@ gen
 *.jpg
 *.jpeg
 *.txt
+*.npy
+*.csv
 
 !bin/.gitkeep
 !data/chekpoints/.gitkeep
