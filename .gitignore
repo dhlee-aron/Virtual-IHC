@@ -80,9 +80,6 @@ gen
 
 !/.gitignore
 .gitignore
-bin/
-data/
-doc/
 # model weight
 *.pth
 *.svs
