@@ -13,7 +13,6 @@ def ParseQupathAnnotation(path, basepath='./data/wsi/hotspot_annotation'):
         file_path = f.readline().replace("\n", '')
         annotation[file_name]['path'] = file_path
         for line1, line2 in zip(f, f):
-            #            break
             line_name = line1.replace("\n", '')
             line_coord = line2.replace("\n", '')
             annotation[file_name][str(idx)] = {}
@@ -35,7 +34,9 @@ def ParseQupathAnnotation(path, basepath='./data/wsi/hotspot_annotation'):
     np.save(os.path.join(basepath,
                          '{}.npy'.format(file_name)),
             annotation)
-    print('Anno. {} saved at {}'.format(file_name, basepath)
+    print('Anno. {} saved at {}'.format(file_name, basepath))
 
-# anno_path = os.path.join(base_path, 'annotation')
-# ParseQupathAnnotation(path)
+
+basepath = './data/wsi/hotspot_annotation'
+anno_path = os.path.join(basepath, 'annotation')
+ParseQupathAnnotation(anno_path)

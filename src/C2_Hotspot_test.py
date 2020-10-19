@@ -183,7 +183,7 @@ def predict_annotated_wsi(input_file_path, annotation_file_path, output_file_pat
         exit(1)
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    net_g = define_G('unet', 3, 3, 64)
+    net_g = define_G('unet', 3, 3)
     net_g.load_state_dict(torch.load(model_file_path))
 
     filename = os.path.splitext(os.path.basename(input_file_path))[0]

@@ -25,7 +25,7 @@ def TorchRgb2hed(rgb, trans_mat):
 
 
 # Training settings
-def train(run_info='model', dataset_path='data/train', img_per_batch =10000,
+def train(run_info='model', dataset_path='data/train', img_per_epoch =10000,
           batch_size=1, model='unet', input_nc=3, output_nc=3, ngf=64, ndf=64,
           epoch_count=1, niter=100, niter_decay=100, lr=0.0002,
           lr_policy='lambda', lr_decay_iters=50, beta1=0.5, cuda=True,
@@ -57,7 +57,7 @@ def train(run_info='model', dataset_path='data/train', img_per_batch =10000,
     log.info('info: Loading datasets')
     n_workers = threads
     batch_size = batch_size
-    img_per_batch = img_per_batch
+    img_per_epoch = img_per_epoch
 
     staining_train_dataset = StainingDatasetAux(
         dataset_dir=dataset_path,
@@ -188,7 +188,7 @@ def train(run_info='model', dataset_path='data/train', img_per_batch =10000,
                         sum(loss_g_l1_list) / len(loss_g_l1_list),
                         sum(loss_g_hed_l1_list) / len(loss_g_hed_l1_list)))
 
-            if iteration == img_per_batch:
+            if iteration == img_per_epoch:
                 break
 
         update_learning_rate(net_g_scheduler, optimizer_g)
@@ -221,11 +221,11 @@ def train(run_info='model', dataset_path='data/train', img_per_batch =10000,
                 run_info, run_info, today.strftime("%Y%m%d"))
             torch.save(net_g.state_dict(), net_g_model_out_path)
 
-data_path = '/media/dong/94a07df8-6863-42d6-86f3-c96e626447dd/HE_IHC_KKM/HE_IHC_Slides/data/patch_select_0708_size25k_stratio005_ratio201_Train'
-train(run_info='model', dataset_path=data_path, img_per_batch =10000,
-          batch_size=1, model='unet', input_nc=3, output_nc=3, ngf=64, ndf=64,
-          epoch_count=1, niter=100, niter_decay=100, lr=0.0002,
-          lr_policy='lambda', lr_decay_iters=50, beta1=0.5, cuda=True,
-              threads=4,seed=123,lamb=10,lamb_hed=0.9,hed_normalize=False)
+# data_path = '/media/dong/94a07df8-6863-42d6-86f3-c96e626447dd/HE_IHC_KKM/HE_IHC_Slides/data/patch_select_0708_size25k_stratio005_ratio201_Train'
+# train(run_info='model', dataset_path=data_path, img_per_epoch =10000,
+#           batch_size=1, model='unet', input_nc=3, output_nc=3, ngf=64, ndf=64,
+#           epoch_count=1, niter=100, niter_decay=100, lr=0.0002,
+#           lr_policy='lambda', lr_decay_iters=50, beta1=0.5, cuda=True,
+#               threads=4,seed=123,lamb=10,lamb_hed=0.9,hed_normalize=False)
 
 

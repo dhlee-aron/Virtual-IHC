@@ -69,7 +69,7 @@ def predict_wsi(input_file_path, output_file_path, model_file_path,
         exit(1)
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    net_g = define_G('unet', 3, 3, 64)
+    net_g = define_G('unet', 3, 3)
     net_g.load_state_dict(torch.load(model_file_path))
 
     he_slide = openslide.open_slide(input_file_path)
@@ -150,9 +150,9 @@ def predict_wsi(input_file_path, output_file_path, model_file_path,
     print('finish the predict {}'.format())
 
 # Testing settings
-#  input_file_path = 'data/wsi/HE_S14-03249-3U.svs'
-#  output_file_path = 'data/result/wsi'
-#  model_name = 'model_20200708'
-#  model_file_path = "data/checkpoints/{}.pth".format(model_name)
-#  predict_wsi(input_file_path, output_file_path, model_file_path)
+# input_file_path = 'data/wsi/HE_S14-03249-3U.svs'
+# output_file_path = 'data/result/wsi'
+# model_name = 'model_20200708'
+# model_file_path = "data/checkpoints/{}.pth".format(model_name)
+# predict_wsi(input_file_path, output_file_path, model_file_path)
 

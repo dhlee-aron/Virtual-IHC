@@ -228,23 +228,23 @@ def local_transition_map_cal(reg_map_result, axis=0, grid_size=10):
     return transition_value
 
 
-def GetRegistrationCoordinate(slidename=None,
-                              wsi_image_path='./data/wsi/train_slide',
+def GetRegistrationCoordinate(patient_id=None,
+                              wsi_path='./data/wsi/train_slide',
                               Downsample_Times=32, n_workers=7):
-    if slidename is None or not slidename:
+    if patient_id is None or not patient_id:
         sys.stderr.write('Slide is required.')
         exit(1)
-    registration_path = os.path.join(wsi_image_path, slidename)
+    registration_path = os.path.join(wsi_path, patient_id)
     if os.path.exists('{}/{}-Local-Regeistration.npy'.format(registration_path,
-                                                             slidename)):
+                                                             patient_id)):
         return ('Local-Regeistration already done')
 
     global CK_org_image
     global HE_org_image
 
-    print('RUN {}'.format(slidename))
-    Target_Slide_Path = os.path.join(wsi_image_path, 'HE_' + slidename + '.svs')
-    Moving_Slide_Path = os.path.join(wsi_image_path, 'CK_' + slidename + '.svs')
+    print('RUN {}'.format(patient_id))
+    Target_Slide_Path = os.path.join(wsi_path, 'HE_' + patient_id + '.svs')
+    Moving_Slide_Path = os.path.join(wsi_path, 'CK_' + patient_id + '.svs')
 
     Target_P = openslide.open_slide(Target_Slide_Path)
     Moving_P = openslide.open_slide(Moving_Slide_Path)
@@ -271,10 +271,10 @@ def GetRegistrationCoordinate(slidename=None,
     HE_org_image = Target_P
     CK_org_image = Moving_P
     Global_Translation = G_Moving_Img_Translation
-    Slide_ID = slidename
+    Slide_ID = patient_id
     Local_size_h = 1024
     Local_size_w = 1024
-    # global wsi_image_path
+    # global wsi_path
 
     if not os.path.exists(registration_path):  # create the cut image folder
         os.makedirs(registration_path)
@@ -300,14 +300,14 @@ def GetRegistrationCoordinate(slidename=None,
         r1 = list(
             tqdm.tqdm(p.imap(registraion_map, iter_list), total=total_len))
     np.save(
-        '{}/{}-Local-Regeistration.npy'.format(registration_path, slidename),
+        '{}/{}-Local-Regeistration.npy'.format(registration_path, patient_id),
         r1)
 
 
-def MakePatchImage(slidename=None, wsi_image_path='./data/wsi/train_slide',
-                   Downsample_Times=32, patch_name='patch_images_512'):
-    print(slidename)
-    registration_path = os.path.join(wsi_image_path, slidename)
+def MakePatchImage(patient_id=None, wsi_path='./data/wsi/train_slide',
+                   Downsample_Times=32, patch_name='patch_512'):
+    print(patient_id)
+    registration_path = os.path.join(wsi_path, patient_id)
     if not os.path.exists(
             os.path.join(registration_path, 'CK_{}/'.format(patch_name))):
         os.mkdir(os.path.join(registration_path, 'CK_{}/'.format(patch_name)))
@@ -315,14 +315,14 @@ def MakePatchImage(slidename=None, wsi_image_path='./data/wsi/train_slide',
             os.path.join(registration_path, 'HE_{}/'.format(patch_name))):
         os.mkdir(os.path.join(registration_path, 'HE_{}/'.format(patch_name)))
 
-    Target_Slide_Path = os.path.join(wsi_image_path, 'HE_' + slidename + '.svs')
-    Moving_Slide_Path = os.path.join(wsi_image_path, 'CK_' + slidename + '.svs')
+    Target_Slide_Path = os.path.join(wsi_path, 'HE_' + patient_id + '.svs')
+    Moving_Slide_Path = os.path.join(wsi_path, 'CK_' + patient_id + '.svs')
 
     Target_P = openslide.open_slide(Target_Slide_Path)
     Moving_P = openslide.open_slide(Moving_Slide_Path)
 
     r1 = np.load(os.path.join(registration_path,
-                              '{}-Local-Regeistration.npy'.format(slidename)))
+                              '{}-Local-Regeistration.npy'.format(patient_id)))
     rr = np.array(r1)
     num_h, num_w, _, _, _, _, _ = rr.max(0)
 
@@ -402,12 +402,12 @@ def MakePatchImage(slidename=None, wsi_image_path='./data/wsi/train_slide',
 
         for x in [0, 512]:
             for y in [0, 512]:
-                subname = '{}_{}_{}'.format(slidename, CK_start_h + y,
+                subname = '{}_{}_{}'.format(patient_id, CK_start_h + y,
                                             CK_start_w + x)
-                ck_patch_path = os.path.join(wsi_image_path, slidename,
+                ck_patch_path = os.path.join(wsi_path, patient_id,
                                              'CK_{}/CK_{}.jpg'.format(
                                                  patch_name, subname))
-                he_patch_path = os.path.join(wsi_image_path, slidename,
+                he_patch_path = os.path.join(wsi_path, patient_id,
                                              'HE_{}/HE_{}.jpg'.format(
                                                  patch_name, subname))
 
@@ -428,17 +428,17 @@ def MakePatchImage(slidename=None, wsi_image_path='./data/wsi/train_slide',
                 patch_info[subname]['tsr'] = ratio
                 patch_info[subname]['bgratio'] = bg_white_ratio
 
-    np.save(os.path.join(wsi_image_path,
-                         slidename, '{}_patch_info'.format(slidename)),
+    np.save(os.path.join(wsi_path,
+                         patient_id, '{}_patch_info'.format(patient_id)),
             patch_info)
     print('Finished to make patch image ')
 
 
-GetRegistrationCoordinate(slidename='S14-05717-3O',
-                          wsi_image_path='./data/wsi/train_slide',
-                          Downsample_Times=32, n_workers=7)
-
-MakePatchImage(slidename='S14-05717-3O',
-               wsi_image_path='./data/wsi/train_slide',
-               Downsample_Times=32,
-               patch_name='patch_images_512')
+# GetRegistrationCoordinate(patient_id='S14-05717-3O',
+#                           wsi_path='./data/wsi/train_slide',
+#                           Downsample_Times=32, n_workers=7)
+#
+# MakePatchImage(patient_id='S14-05717-3O',
+#                wsi_path='./data/wsi/train_slide',
+#                Downsample_Times=32,
+#                patch_name='patch_images_512')
