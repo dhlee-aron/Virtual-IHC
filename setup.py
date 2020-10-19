@@ -19,7 +19,7 @@ def read_long_description(path):
 
 setup(
     name='virtualstaining',
-    version=find_version('src/__init__.py'),
+    version=find_version('virtualstaining/__init__.py'),
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     license='Arontier Proprietary License',
@@ -31,8 +31,8 @@ setup(
     author_email='dhlee@arontier.co',
     zip_safe=False,
     scripts=[
-        'bin/testhotspot',
-        'bin/testwsi',
+        'bin/virtualstaining-testhotspot',
+        'bin/virtualstaining-testwsi',
     ],
     setup_requires=[],
     install_requires=[
